@@ -34,10 +34,14 @@ def data_add(images, label):
     images = tf.image.random_brightness(images, 0.2)
     images = tf.image.random_hue(images, 0.05)
     images = tf.image.random_contrast(images, lower=0.3, upper=1.0)
+    return images, label
+
+
+def resizeimage(images, label):
     images = tf.split(images, [1 for i in range(0, Config.channels)], axis=0)
     for i in range(0, len(images)):
         images[i] = tf.reshape(images[i], shape=[Config.image_w, Config.image_h, 3])
-        images[i] = tf.random_crop(images[i], size=[Config.image_size, Config.image_size, 3])
+        images[i] = tf.image.resize_images(images[i], (Config.image_size, Config.image_size))
     images = tf.stack(images)
     return images, label
 
@@ -52,7 +56,7 @@ def dataset_records(record_path, batch_size=4, epoch=10, istrain=True):
     dataset = dataset.map(parse_exmp)
     if istrain:
         dataset = dataset.map(data_add)
-    dataset = dataset.map(sub_mean)
+    dataset = dataset.map(resizeimage).map(sub_mean)
     if istrain:
         dataset = dataset.shuffle(reshuffle_each_iteration=True, buffer_size=1000)
     dataset = dataset.batch(batch_size=batch_size).repeat(epoch)
