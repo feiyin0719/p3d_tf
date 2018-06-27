@@ -40,43 +40,50 @@ def createdatalist(imagedir, labelpath, trainpath, testpath, frac=0.8):
         for i in range(0, trainlen):
             file_name = file_list[i]
             images_path = os.listdir(os.path.join(imagedir, class_name, file_name))
-            image_s = [[], [], [], []]
+            images_len = len(images_path)
+            frame_dis = images_len / 16
+            if frame_dis >= 4:
+                frame_dis_dis = frame_dis / 4
+                frame_len = 4
+            else:
+                frame_dis_dis = 1
+                frame_len = int(frame_dis)
+            frame_dis = int(frame_dis)
+            frame_dis_dis = int(frame_dis_dis)
+            for v_len in range(0, frame_len):
+                if v_len == 0:
+                    start = 0
+                elif v_len == frame_len - 1:
+                    start = frame_dis - 1
+                else:
+                    start = frame_dis_dis * v_len
+                image_s = [os.path.realpath(os.path.join(imagedir, class_name, file_name, '{}.jpg'.format(image_index)))
+                           for image_index in range(start, start + 16 * frame_dis, frame_dis)]
+                train_data.append({'data': image_s, 'lable': label_count})
 
-            for image_index in range(len(images_path)):
-                temppath = os.path.join(imagedir, class_name, file_name, '{}.jpg'.format(image_index))
-                image_s[0].append(temppath)
-                if image_index % 2 == 0:
-                    image_s[1].append(temppath)
-                if image_index % 4 == 0:
-                    image_s[2].append(temppath)
-                if image_index % 8 == 0:
-                    image_s[3].append(temppath)
-                for j in range(0, 4):
-                    if len(image_s[j]) == 16:
-                        train_data.append({'data': image_s[j], 'label': label_count})
-                        # train_data['data'].append(image_s[j])
-                        # train_data['label'].append(label_count)
-                        image_s[j] = []
         for i in range(trainlen, len(file_list)):
             file_name = file_list[i]
             images_path = os.listdir(os.path.join(imagedir, class_name, file_name))
-            image_s = [[], [], [], []]
-
-            for image_index in range(len(images_path)):
-                temppath = os.path.realpath(os.path.join(imagedir, class_name, file_name, '{}.jpg'.format(image_index)))
-                image_s[0].append(temppath)
-                if image_index % 2 == 0:
-                    image_s[1].append(temppath)
-                if image_index % 4 == 0:
-                    image_s[2].append(temppath)
-                if image_index % 8 == 0:
-                    image_s[3].append(temppath)
-                for j in range(0, 4):
-                    if len(image_s[j]) == 16:
-                        test_data.append({'data': image_s[j], 'label': label_count})
-                        # test_data['data'].append(image_s[j])
-                        # test_data['label'].append(label_count)
-                        image_s[j] = []
+            images_len = len(images_path)
+            frame_dis = images_len / 16
+            if frame_dis >= 4:
+                frame_dis_dis = frame_dis / 4
+                frame_len = 4
+            else:
+                frame_dis_dis = 1
+                frame_len = int(frame_dis)
+            frame_dis = int(frame_dis)
+            frame_dis_dis = int(frame_dis_dis)
+            for v_len in range(0, frame_len):
+                if v_len == 0:
+                    start = 0
+                elif v_len == frame_len - 1:
+                    start = frame_dis - 1
+                else:
+                    start = frame_dis_dis * v_len
+                image_s = [os.path.realpath(os.path.join(imagedir, class_name, file_name, '{}.jpg'.format(image_index)))
+                           for image_index in range(start, start + 16 * frame_dis, frame_dis)]
+                test_data.append({'data': image_s, 'lable': label_count})
 
         label_count += 1
     random.shuffle(train_data)

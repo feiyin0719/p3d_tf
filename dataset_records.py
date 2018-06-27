@@ -31,9 +31,13 @@ def parse_exmp(serial_exmp):
 
 
 def data_add(images, label):
-    images = tf.image.random_brightness(images, 0.2)
-    images = tf.image.random_hue(images, 0.05)
-    images = tf.image.random_contrast(images, lower=0.3, upper=1.0)
+    images = tf.split(images, [1 for i in range(0, Config.channels)], axis=0)
+    for i in range(0, len(images)):
+        images[i] = tf.reshape(images[i], shape=[Config.image_w, Config.image_h, 3])
+        images[i] = tf.image.random_brightness(images[i], 0.2)
+        images[i] = tf.image.random_hue(images[i], 0.05)
+        images[i] = tf.image.random_contrast(images[i], lower=0.3, upper=1.0)
+    images = tf.stack(images)
     return images, label
 
 
