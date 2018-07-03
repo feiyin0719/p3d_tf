@@ -24,7 +24,7 @@ def parse_exmp(serial_exmp):
                                                            'label': tf.FixedLenFeature([], tf.int64)})
     images = tf.decode_raw(feats['images'], tf.uint8)
     images = tf.cast(images, tf.float32)
-    images = tf.reshape(images, shape=[Config.channels, Config.image_w, Config.image_h, 3])
+    images = tf.reshape(images, shape=[Config.channels, Config.image_h, Config.image_w, 3])
     # label =tf.one_hot (feats['label'],20,1,0)
     label = feats['label']
     return images, label
@@ -33,7 +33,7 @@ def parse_exmp(serial_exmp):
 def data_add(images, label):
     images = tf.split(images, [1 for i in range(0, Config.channels)], axis=0)
     for i in range(0, len(images)):
-        images[i] = tf.reshape(images[i], shape=[Config.image_w, Config.image_h, 3])
+        images[i] = tf.reshape(images[i], shape=[Config.image_h, Config.image_w, 3])
         images[i] = tf.image.random_brightness(images[i], 0.2)
         images[i] = tf.image.random_hue(images[i], 0.05)
         images[i] = tf.image.random_contrast(images[i], lower=0.3, upper=1.0)
@@ -44,7 +44,7 @@ def data_add(images, label):
 def resizeimage(images, label):
     images = tf.split(images, [1 for i in range(0, Config.channels)], axis=0)
     for i in range(0, len(images)):
-        images[i] = tf.reshape(images[i], shape=[Config.image_w, Config.image_h, 3])
+        images[i] = tf.reshape(images[i], shape=[Config.image_h, Config.image_w, 3])
         images[i] = tf.image.resize_images(images[i], (Config.image_size, Config.image_size))
     images = tf.stack(images)
     return images, label
